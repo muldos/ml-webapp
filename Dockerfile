@@ -10,7 +10,7 @@ WORKDIR /app
 # Copy only the requirements file first to leverage Docker caching
 COPY requirements.txt .
 # mount th secret that will allow to connect to the artifactory registry 
-RUN --mount=type=secret,id=pip-index-url,env=PIP_INDEX_URL
+#RUN --mount=type=secret,id=pip-index-url,env=PIP_INDEX_URL
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire application code
