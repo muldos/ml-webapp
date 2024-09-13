@@ -12,8 +12,9 @@ COPY requirements.txt .
 # Mount th secret that will allow to connect to the artifactory registry, and expose it as an 
 #environment variable only for this line of the dockerfile 
 # Install dependencies with pip, that will use our private registry
-RUN --mount=type=secret,id=pip-index-url export PIP_INDEX_URL=$(cat /run/secrets/pip-index-url) \ 
- pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=secret,id=pip-index-url \
+    export PIP_INDEX_URL=$(cat /run/secrets/pip-index-url) && \ 
+    pip install --no-cache-dir -r requirements.txt
 # Copy the entire application code
 COPY . .
 # Expose the port your application will run on
