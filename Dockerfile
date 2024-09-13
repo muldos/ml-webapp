@@ -1,17 +1,18 @@
 FROM python:3.12.6
 
 # Set up environment variables for Python
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV TORCHINDUCTOR_FREEZING=1
 
 # Create and set the working directory
 WORKDIR /app
 # Copy only the requirements file first to leverage Docker caching
 COPY requirements.txt .
-# mount th secret that will allow to connect to the artifactory registry 
-#RUN --mount=type=secret,id=pip-index-url,env=PIP_INDEX_URL
-# Install dependencies
+# Mount th secret that will allow to connect to the artifactory registry, and expose it as an 
+#environment variable only for this line of the dockerfile 
+# Install dependencies with pip, that will use our private registry
+#RUN --mount=type=secret,id=pip-index-url export PIP_INDEX_URL=$(cat /run/secrets/env) \ 
 RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire application code
 COPY . .
