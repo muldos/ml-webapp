@@ -14,7 +14,7 @@ COPY requirements.txt .
 # Install dependencies with pip, that will use our private registry
 RUN --mount=type=secret,id=pip-index-url \
     export PIP_INDEX_URL=$(cat /run/secrets/pip-index-url) && \ 
-    pip install flask request transformers[torch]
+    pip install --no-cache-dir -r requirements.txt
 # Copy the entire application code
 COPY . .
 # Expose the port your application will run on

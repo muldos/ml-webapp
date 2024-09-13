@@ -1,3 +1,3 @@
 From scratch 
 
-`pip install Flask 'transformers[torch]'`
+`pip install flask 'transformers[torch]'`
