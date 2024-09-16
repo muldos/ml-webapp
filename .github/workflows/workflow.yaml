@@ -58,9 +58,17 @@ jobs:
           secrets: |
             "pip-index-url=https://${{ steps.setup-cli.outputs.oidc-user }}:${{ steps.setup-cli.outputs.oidc-token }}@${{ vars.JF_HOST }}/artifactory/api/pypi/${{env.PYPI_REMOTE_REPO}}/simple"
           tags: ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
-      - name: Docker assesments
+      - name: Docker info
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         run: |
           echo ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
           jf rt bdc ${{ env.DOCKER_REPO }} --image-file ./image-metadata.json --build-name ${{ env.JFROG_CLI_BUILD_NAME }} --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      - name: Security assesments
+        env: 
+            PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+        run: |
+          # Xray build scan example
+          docker pull ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
+          jf docker scan ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} --severity='HIGH,CRITICAL' --vuln
+          jf bs --fail=false --vuln ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
