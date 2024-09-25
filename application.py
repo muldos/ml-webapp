@@ -1,9 +1,10 @@
 import os
 from flask import Flask, render_template, request
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
-
-classifier = pipeline("text-classification", model="michellejieli/emotion_text_classifier") 
+tokenizer = AutoTokenizer.from_pretrained("/app/hf-storage")
+model = AutoModelForSequenceClassification.from_pretrained("/app/hf-storage")
+classifier = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer, device="cpu")
 
 app = Flask(__name__)
 
