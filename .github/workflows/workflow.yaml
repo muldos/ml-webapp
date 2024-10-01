@@ -48,6 +48,7 @@ jobs:
       - name: Build and push docker image
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JF_ACCESS_TOKEN: ${{ steps.setup-cli.outputs.oidc-token }}  
         uses: docker/build-push-action@v6
         id: docker_build
         with:
@@ -55,8 +56,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           provenance: true
           push: true
+          build-args: |
+            "jf_url=https://${{ vars.JF_HOST }}"
           secrets: |
             "pip-index-url=https://${{ steps.setup-cli.outputs.oidc-user }}:${{ steps.setup-cli.outputs.oidc-token }}@${{ vars.JF_HOST }}/artifactory/api/pypi/${{env.PYPI_REMOTE_REPO}}/simple"
+            "jfrog-token=${{ env.JF_ACCESS_TOKEN }}"
+            "HF_ENDPOINT=https://${{ vars.JF_HOST }}/artifactory/api/huggingfaceml/dro-mlops-hf-dev-local"
+            "HF_TOKEN=${{ steps.setup-cli.outputs.oidc-token }}"
           tags: ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
       - name: Docker info
         env: 

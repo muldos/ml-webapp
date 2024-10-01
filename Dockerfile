@@ -1,5 +1,6 @@
 FROM python:3.12.6 as backend-build
-
+ARG jf_url
+ENV JF_URL=$jf_url
 # Set up environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -10,6 +11,11 @@ WORKDIR /app
 # Copy the entire application code
 COPY requirements.txt *.py ./
 COPY templates ./templates
+RUN curl -fL https://install-cli.jfrog.io | sh
+RUN --mount=type=secret,id=jfrog-token \
+    export JF_ACCESS_TOKEN=$(cat /run/secrets/jfrog-tokenN) && \ 
+    jf config add --url=$JF_URL --access-token=$JF_ACCESS_TOKEN
+RUN jf rt ping
 # Mount th secret that will allow to connect to the artifactory registry, and expose it as an 
 #environment variable only for this line of the dockerfile 
 # Install dependencies with pip, that will use our private registry
