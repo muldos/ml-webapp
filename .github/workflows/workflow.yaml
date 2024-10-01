@@ -78,7 +78,7 @@ jobs:
             PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         run: |
           # save some space on the runner before pulling the image 
-          docker buildx prune -y
+          docker buildx prune -f
           sudo rm -rf "/usr/local/share/boost"
           # Xray build scan example
           docker pull ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
