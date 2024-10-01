@@ -5,7 +5,7 @@ ENV JF_URL=$jf_url
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV TORCHINDUCTOR_FREEZING=1
-
+ENV CI=1 
 # Create and set the working directory
 WORKDIR /app
 # Copy the entire application code
