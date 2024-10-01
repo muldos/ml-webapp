@@ -32,7 +32,7 @@ RUN --mount=type=secret,id=HF_ENDPOINT \
     python preload-hf-model.py
 
 
-FROM python:3.12.6-alpine
+FROM python:3.12.6
 # Set up environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
