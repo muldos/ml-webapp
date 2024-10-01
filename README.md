@@ -1,6 +1,6 @@
 #MLOps demo web application
 
-[![Last build](https://github.com/muldos/ml-webapp/actions/workflows/workflow.yaml)]
+[![gh-mlops-webapp](https://github.com/muldos/ml-webapp/actions/workflows/workflow.yaml/badge.svg)](https://github.com/muldos/ml-webapp/actions/workflows/workflow.yaml)
 
 From scratch 
 
