@@ -13,7 +13,7 @@ COPY requirements.txt *.py ./
 COPY templates ./templates
 RUN curl -fL https://install-cli.jfrog.io | sh
 RUN --mount=type=secret,id=jfrog-token \
-    export JF_ACCESS_TOKEN=$(cat /run/secrets/jfrog-tokenN) && \ 
+    export JF_ACCESS_TOKEN=$(cat /run/secrets/jfrog-token) && \ 
     jf config add --url=$JF_URL --access-token=$JF_ACCESS_TOKEN
 RUN jf rt ping
 # Mount th secret that will allow to connect to the artifactory registry, and expose it as an 
