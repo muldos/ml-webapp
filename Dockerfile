@@ -1,4 +1,4 @@
-FROM python:3.12.6 as backend-build
+FROM python:3.12.6 AS backend-build
 ARG jf_url
 ARG pypi_remote_repo
 ENV JF_URL=$jf_url
