@@ -60,7 +60,7 @@ jobs:
           push: true
           build-args: |
             "jf_url=https://${{ vars.JF_HOST }}"
-            "pypi_remote_repo=${{vars.PYPI_REMOTE_REPO}}"
+            "pypi_remote_repo=${{ env.PYPI_REMOTE_REPO }}"
           secrets: |
             "pip-index-url=https://${{ steps.setup-cli.outputs.oidc-user }}:${{ steps.setup-cli.outputs.oidc-token }}@${{ vars.JF_HOST }}/artifactory/api/pypi/${{env.PYPI_REMOTE_REPO}}/simple"
             "jfrog-token=${{ env.JF_ACCESS_TOKEN }}"
