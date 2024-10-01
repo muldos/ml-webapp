@@ -1,6 +1,8 @@
 FROM python:3.12.6 as backend-build
 ARG jf_url
+ARG pypi_remote_repo
 ENV JF_URL=$jf_url
+ENV PYPI_REMOTE_REPO=$pypi_remote_repo
 # Set up environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -15,13 +17,13 @@ RUN curl -fL https://install-cli.jfrog.io | sh
 RUN --mount=type=secret,id=jfrog-token \
     export JF_ACCESS_TOKEN=$(cat /run/secrets/jfrog-token) && \ 
     jf config add --url=$JF_URL --access-token=$JF_ACCESS_TOKEN
-RUN jf rt ping
+RUN jf rt ping && jf pip-config --repo-resolve=$PYPI_REMOTE_REPO
 # Mount th secret that will allow to connect to the artifactory registry, and expose it as an 
 #environment variable only for this line of the dockerfile 
 # Install dependencies with pip, that will use our private registry
 RUN --mount=type=secret,id=pip-index-url \
     export PIP_INDEX_URL=$(cat /run/secrets/pip-index-url) && \ 
-    pip install -v --no-cache-dir -r requirements.txt
+    jf pip install -v --no-cache-dir -r requirements.txt
 #pre-load hf model from artifactory
 RUN --mount=type=secret,id=HF_ENDPOINT \
     --mount=type=secret,id=HF_TOKEN \

@@ -45,6 +45,7 @@ jobs:
           registry: ${{ vars.JF_HOST }}
           username: ${{ steps.setup-cli.outputs.oidc-user }}
           password: ${{ steps.setup-cli.outputs.oidc-token }}         
+      # just building arm64 as running of disk space on the public gh action runners
       - name: Build and push docker image
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
@@ -53,11 +54,13 @@ jobs:
         id: docker_build
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          #platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           provenance: true
           push: true
           build-args: |
             "jf_url=https://${{ vars.JF_HOST }}"
+            "pypi_remote_repo=${{vars.PYPI_REMOTE_REPO}}"
           secrets: |
             "pip-index-url=https://${{ steps.setup-cli.outputs.oidc-user }}:${{ steps.setup-cli.outputs.oidc-token }}@${{ vars.JF_HOST }}/artifactory/api/pypi/${{env.PYPI_REMOTE_REPO}}/simple"
             "jfrog-token=${{ env.JF_ACCESS_TOKEN }}"
@@ -75,7 +78,7 @@ jobs:
             PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         run: |
           # save some space on the runner before pulling the image 
-          docker buildx prune
+          docker buildx prune -y
           sudo rm -rf "/usr/local/share/boost"
           # Xray build scan example
           docker pull ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
