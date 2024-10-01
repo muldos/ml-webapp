@@ -1,3 +1,4 @@
 *.md
 setenv.sh
 pip-creds.txt
+.jfrog/

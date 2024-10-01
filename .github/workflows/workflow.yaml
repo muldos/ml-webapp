@@ -12,6 +12,7 @@ jobs:
       PYPI_REMOTE_REPO: 'dro-pypi-remote'
       JF_URL: https://${{ vars.JF_HOST }}/
       JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}    
+      JFROG_CLI_DEPENDENCIES_DIR: '/home/runner/work/ml-webapp/ml-webapp/.jfrog/dependencies'
     permissions:
       id-token: write
       contents: read
