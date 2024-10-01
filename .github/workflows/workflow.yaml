@@ -21,12 +21,7 @@ jobs:
       packages: write    
     # Here we install all the tools : docker buildx, QEMU, JDK 11, JFrog CLI
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
+      
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup JFrog CLI
@@ -84,12 +79,13 @@ jobs:
         env: 
             PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         run: |
+          # Not enough space on public runners, would require a team / enterprise subscription or private runners
           # save some space on the runner before pulling the image 
-          docker buildx prune -f
-          sudo rm -rf "/usr/local/share/boost"
+          #docker buildx prune -f
+          #sudo rm -rf "/usr/local/share/boost"
           # Xray build scan example
-          docker pull --platform=linux/arm64 ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
+          #docker pull --platform=linux/arm64 ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
           # remove docker scan for now, as default disk space on public runners is insufficient
-          jf docker scan ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} --severity='HIGH,CRITICAL' --vuln
+          #jf docker scan ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} --severity='HIGH,CRITICAL' --vuln
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
           jf bs --fail=false --vuln ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
