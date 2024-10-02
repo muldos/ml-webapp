@@ -1,4 +1,6 @@
-FROM python:3.12.6 AS backend-build
+ARG BASE_IMAGE=python:3.12.6
+
+FROM $BASE_IMAGE AS backend-build
 ARG jf_url
 ARG pypi_remote_repo
 ENV JF_URL=$jf_url
@@ -32,7 +34,7 @@ RUN --mount=type=secret,id=HF_ENDPOINT \
     python preload-hf-model.py
 
 
-FROM python:3.12.6
+FROM $BASE_IMAGE
 # Set up environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

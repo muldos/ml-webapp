@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DOCKER_REPO: 'dro-oci-dev-local'
+      DOCKER_REPO: 'dro-oci-dev-virtual'
       IMAGE_NAME: 'mlops-demo'
       PYPI_REMOTE_REPO: 'dro-pypi-remote'
       JF_URL: https://${{ vars.JF_HOST }}/
@@ -30,6 +30,7 @@ jobs:
         env:
           JF_URL: https://${{ vars.JF_HOST }}/
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         with:
             oidc-provider-name: davidro-github-integration
             oidc-audience: davidro-github
@@ -37,10 +38,15 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        # We build & test the WAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
+        # We audit and collect the dependencies outside of the dockerfile, for maximum traceability
       - name: Audit the dependencies
         run: |
           jf audit --pip --requirements-file=requirements.txt
+      - name: Collect dependencies informations
+        run: |
+          jf pip-config --repo-resolve=$PYPI_REMOTE_REPO
+          jf pip install -v --no-cache-dir -t ./pip-deps/ -r requirements.txt 
+          jf rt bad --module ${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }} ./pip-deps/
       - name: Authenticate Docker
         uses: docker/login-action@v3
         with:
@@ -63,6 +69,7 @@ jobs:
           build-args: |
             "jf_url=https://${{ vars.JF_HOST }}"
             "pypi_remote_repo=${{ env.PYPI_REMOTE_REPO }}"
+            "BASE_IMAGE"=${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/python:3.12.6
           secrets: |
             "pip-index-url=https://${{ steps.setup-cli.outputs.oidc-user }}:${{ steps.setup-cli.outputs.oidc-token }}@${{ vars.JF_HOST }}/artifactory/api/pypi/${{env.PYPI_REMOTE_REPO}}/simple"
             "jfrog-token=${{ env.JF_ACCESS_TOKEN }}"
