@@ -44,6 +44,7 @@ jobs:
       - name: Collect dependencies informations
         run: |
           jf pip-config --repo-resolve=$PYPI_REMOTE_REPO
+          jf curation-audit --requirements-file requirements.txt 
           jf pip install -v --no-cache-dir -t ./pip-deps/ -r requirements.txt 
           #jf rt bad --module ${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }} ./pip-deps/
       - name: Authenticate Docker
